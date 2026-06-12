@@ -1,0 +1,444 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard | Admin</title>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="font-sans antialiased overflow-x-hidden">
+    <!-- Mouse Trail Cursor Canvas -->
+    <canvas id="cursor-canvas"></canvas>
+
+    <!-- Header Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 glass-nav h-20 transition-all duration-500 scrolled shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-full flex justify-between items-center">
+            <a href="/" class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">RZ</a>
+            
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-zinc-400 border border-slate-200 dark:border-zinc-800 px-3 py-1.5 rounded-full bg-white/50 dark:bg-zinc-950/50">Admin Telemetry</span>
+
+            <div class="flex items-center gap-4">
+                <a href="/admin/" class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 hover:opacity-85 transition">Django Admin</a>
+                
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2.5 rounded-full border border-slate-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/50 hover:bg-slate-100 dark:hover:bg-zinc-900 transition duration-300 text-slate-600 dark:text-gray-400 focus:outline-none" aria-label="Toggle Theme">
+                    <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="min-h-screen pt-32 pb-24 bg-grid-pattern relative">
+        <!-- Background Glowing Lights -->
+        <div class="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-purple-300/30 dark:bg-purple-900/10 rounded-full glow-backdrop-blur animate-pulse-slow"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-cyan-300/30 dark:bg-cyan-900/10 rounded-full glow-backdrop-blur animate-pulse-slow" style="animation-delay: 2s;"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <!-- Header section -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div class="space-y-3">
+                    <div class="inline-flex items-center gap-2">
+                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-xs uppercase tracking-widest text-emerald-500 font-bold">System Telemetry Live</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Portfolio Analytics</h1>
+                </div>
+                <p class="text-slate-500 dark:text-zinc-400 font-light text-sm max-w-sm">Historical engagement trends, visitor counters, conversion indexes, and tracking metrics.</p>
+            </div>
+
+            <!-- Stats Counters Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 mb-12">
+                <!-- Total Visitors -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Total Views</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ total_visitors }}</span>
+                    <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        +8.2% MoM
+                    </span>
+                </div>
+                <!-- Unique Visitors -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Unique Visitors</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ unique_visitors }}</span>
+                    <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        +4.5% MoM
+                    </span>
+                </div>
+                <!-- Resume Downloads -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">CV Downloads</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ resume_downloads }}</span>
+                    <span class="text-[10px] text-pink-600 dark:text-pink-400 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        +12% MoM
+                    </span>
+                </div>
+                <!-- Inquiries -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Inquiries</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ contact_submissions }}</span>
+                    <span class="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        +15.3% MoM
+                    </span>
+                </div>
+                <!-- Subscribers -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Subscribers</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ newsletter_subscribers }}</span>
+                    <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        +9.1% MoM
+                    </span>
+                </div>
+                <!-- Project Views -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Project Views</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ project_views }}</span>
+                    <span class="text-[10px] text-pink-600 dark:text-pink-400 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        +18.7% MoM
+                    </span>
+                </div>
+                <!-- Conversion Rate -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Conversion Rate</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ conversion_rate }}%</span>
+                    <span class="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6" /></svg>
+                        Optimal
+                    </span>
+                </div>
+            </div>
+
+            <!-- Charts Panels -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+                <!-- Visitor Growth Line Chart -->
+                <div class="glass-card rounded-[32px] p-8">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+                        Engagement Metrics (Monthly)
+                    </h3>
+                    <div class="h-80 w-full flex items-center justify-center">
+                        <canvas id="engagementChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Viewed Projects -->
+                <div class="glass-card rounded-[32px] p-8 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-1.5 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+                            Top Projects performance
+                        </h3>
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-zinc-800 text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                                        <th class="pb-3">Project Title</th>
+                                        <th class="pb-3">Category</th>
+                                        <th class="pb-3 text-right">Total Views</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-zinc-900">
+                                    {% if top_projects %}
+                                        {% for proj in top_projects %}
+                                            <tr class="text-slate-800 dark:text-zinc-350">
+                                                <td class="py-4 font-bold">{{ proj.name }}</td>
+                                                <td class="py-4">
+                                                    <span class="px-2.5 py-0.5 rounded-full bg-purple-500/5 border border-purple-500/10 text-[10px] font-bold text-purple-500 uppercase tracking-wider">{{ proj.category }}</span>
+                                                </td>
+                                                <td class="py-4 text-right font-semibold">{{ proj.views_count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3" class="py-6 text-center text-slate-500">No project case studies recorded.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lead Generation Section Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 mt-16">
+                <div class="space-y-3">
+                    <div class="inline-flex items-center gap-2">
+                        <span class="h-2 w-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                        <span class="text-xs uppercase tracking-widest text-cyan-500 font-bold">Acquisition Funnel Telemetry</span>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">Lead Generation Analytics</h2>
+                </div>
+            </div>
+
+            <!-- Leads Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <!-- Total Leads -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Total Leads</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ total_leads }}</span>
+                    <span class="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold flex items-center gap-1">
+                        Captured Widgets
+                    </span>
+                </div>
+                <!-- Qualified Leads -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Qualified Leads</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ qualified_leads }}</span>
+                    <span class="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
+                        Budget/Tech Match
+                    </span>
+                </div>
+                <!-- Lead Conversion Rate -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Lead Conv. Rate</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white">{{ lead_conversion_rate }}%</span>
+                    <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1">
+                        Leads / Unique visitors
+                    </span>
+                </div>
+                <!-- Most Requested Service -->
+                <div class="glass-card p-6 rounded-3xl premium-glow-card flex flex-col justify-between h-36">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Top Service</span>
+                    <span class="text-lg font-black text-slate-900 dark:text-white truncate" title="{{ most_requested_service }}">{{ most_requested_service }}</span>
+                    <span class="text-[10px] text-pink-600 dark:text-pink-400 font-bold flex items-center gap-1">
+                        Most Demanded
+                    </span>
+                </div>
+            </div>
+
+            <!-- Leads Chart & Tables -->
+            <div class="grid lg:grid-cols-3 gap-8 mb-12">
+                <!-- Lead Sources Doughnut Chart -->
+                <div class="glass-card rounded-[32px] p-8 lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-1.5 h-6 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></span>
+                            Lead Sources
+                        </h3>
+                        <div class="h-64 w-full flex items-center justify-center">
+                            <canvas id="leadSourcesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Leads Table -->
+                <div class="glass-card rounded-[32px] p-8 lg:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-1.5 h-6 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></span>
+                            Recent Leads Queue
+                        </h3>
+                        <div class="overflow-x-auto w-full max-h-72 overflow-y-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-zinc-800 text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                                        <th class="pb-3">Lead Info</th>
+                                        <th class="pb-3">Source</th>
+                                        <th class="pb-3">Status</th>
+                                        <th class="pb-3">Engagement</th>
+                                        <th class="pb-3 text-right">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-zinc-900">
+                                    {% if recent_leads %}
+                                        {% for lead in recent_leads %}
+                                            <tr class="text-slate-800 dark:text-zinc-350 text-xs">
+                                                <td class="py-3">
+                                                    <div class="font-bold">{{ lead.name }}</div>
+                                                    <div class="text-[10px] text-slate-500 dark:text-zinc-400">{{ lead.email }}</div>
+                                                    {% if lead.phone %}
+                                                        <div class="text-[10px] text-slate-400">{{ lead.phone }}</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-[9px] font-bold uppercase tracking-wider">{{ lead.source }}</span>
+                                                </td>
+                                                <td class="py-3">
+                                                    {% if lead.is_qualified %}
+                                                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold text-emerald-500 uppercase tracking-wider">Qualified</span>
+                                                    {% else %}
+                                                        <span class="px-2 py-0.5 rounded-full bg-slate-500/10 border border-slate-500/20 text-[9px] font-bold text-slate-500 uppercase tracking-wider">Prospect</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="text-[10px]">⏱️ {{ lead.time_on_site }}s</div>
+                                                    <div class="text-[10px]">📜 Scroll: {{ lead.scroll_depth }}%</div>
+                                                </td>
+                                                <td class="py-3 text-right text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                    {{ lead.created_at|date:"M d, H:i" }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="py-6 text-center text-slate-500">No leads captured yet. Keep promoting!</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Chart Configuration Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const months = JSON.parse('{{ months|safe }}');
+            const visitors = JSON.parse('{{ visitor_data|safe }}');
+            const downloads = JSON.parse('{{ downloads_data|safe }}');
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#a1a1aa' : '#64748b';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)';
+
+            const ctx = document.getElementById('engagementChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Monthly Viewers',
+                            data: visitors,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.04)',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            fill: true
+                        },
+                        {
+                            label: 'CV Downloads',
+                            data: downloads,
+                            borderColor: '#ec4899',
+                            backgroundColor: 'rgba(236, 72, 153, 0.04)',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor,
+                                font: {
+                                    family: 'Outfit',
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor,
+                                font: {
+                                    family: 'Outfit'
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor,
+                                font: {
+                                    family: 'Outfit'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Lead Sources Doughnut Chart
+            const leadLabels = JSON.parse('{{ lead_sources_labels|safe }}');
+            const leadData = JSON.parse('{{ lead_sources_data|safe }}');
+
+            const ctxLeads = document.getElementById('leadSourcesChart').getContext('2d');
+            new Chart(ctxLeads, {
+                type: 'doughnut',
+                data: {
+                    labels: leadLabels,
+                    datasets: [{
+                        data: leadData,
+                        backgroundColor: [
+                            '#06b6d4', // cyan-500
+                            '#3b82f6', // blue-500
+                            '#8b5cf6', // purple-500
+                            '#ec4899', // pink-500
+                            '#f59e0b', // amber-500
+                            '#10b981', // emerald-500
+                            '#6366f1'  // indigo-500
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: textColor,
+                                font: {
+                                    family: 'Outfit',
+                                    size: 10
+                                },
+                                boxWidth: 12
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <!-- Main JS Bundle -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
