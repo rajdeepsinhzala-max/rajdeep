@@ -68,7 +68,7 @@ body {
     width: 100vw;
     height: 100vh;
     pointer-events: none;
-    z-index: 999999;
+    z-index: 9999;
     opacity: 0;
     transition: opacity 0.5s ease;
 }
@@ -538,8 +538,8 @@ html {
 /* Scroll to Top Circular Button (Theme-aware: Black in Light theme, White in Dark theme) */
 #scroll-top-btn {
     position: fixed;
-    bottom: 1.5rem; /* bottom-6 (24px) */
-    right: 1rem;    /* right-4 (16px) */
+    bottom: 2.5rem;
+    right: 2.5rem;
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 9999px;
@@ -550,19 +550,12 @@ html {
     color: #ffffff !important;            /* White arrow in light theme */
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    z-index: 99;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    transform: scale(0);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(100px) scale(0.9);
     opacity: 0;
     pointer-events: none;
-    z-index: 999;
-}
-
-@media (min-width: 768px) {
-    #scroll-top-btn {
-        bottom: 2rem;  /* bottom-8 (32px) */
-        right: 2rem;   /* right-8 (32px) */
-    }
 }
 
 .dark #scroll-top-btn {
@@ -572,13 +565,13 @@ html {
 }
 
 #scroll-top-btn.show {
-    transform: scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
     pointer-events: auto;
 }
 
 #scroll-top-btn:hover {
-    transform: translateY(-4px) scale(1.05);
+    transform: translateY(-6px) scale(1.05);
     box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3); /* Subtle purple ambient glow on hover */
 }
 
@@ -590,24 +583,7 @@ html {
 }
 
 #scroll-top-btn:hover svg {
-    transform: translateY(-2px);
-}
-
-/* Floating Action Stack Container */
-#floating-action-stack {
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Star rating coloring rules */
-.feedback-star {
-    transition: color 0.15s ease, transform 0.15s ease;
-}
-.feedback-star.active {
-    color: #fbbf24 !important; /* amber-400 */
-    text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-}
-.feedback-star.hovered {
-    color: #f59e0b !important; /* amber-500 */
+    transform: translateY(-3px);
 }
 
 /* Reel Showcase Infinite Horizontal Marquee Scroll & Fades */
@@ -642,45 +618,4 @@ html {
 
 .dark .showcase-fade-right {
     background: linear-gradient(to left, var(--bg-dark) 0%, transparent 100%);
-}
-
-/* Scrollbar None Utility */
-.scrollbar-none::-webkit-scrollbar {
-    display: none;
-}
-.scrollbar-none {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-
-/* Chatbot Typing Indicator Dot Bounce */
-@keyframes dotBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-.dot-bounce {
-    animation: dotBounce 0.6s infinite ease-in-out;
-}
-.dot-bounce:nth-child(2) {
-    animation-delay: 0.15s;
-}
-.dot-bounce:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-/* Override #scroll-top-btn behavior inside #floating-action-stack to flow correctly */
-#floating-action-stack #scroll-top-btn {
-    position: relative !important;
-    bottom: auto !important;
-    right: auto !important;
-    transform: scale(0);
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-#floating-action-stack #scroll-top-btn.show {
-    transform: scale(1);
-    opacity: 1;
-    pointer-events: auto;
 }
